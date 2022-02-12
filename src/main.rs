@@ -1,66 +1,106 @@
 #![feature(proc_macro_hygiene, decl_macro)]
-// #![feature(custom_derive)]
-
-extern crate rocket;
-extern crate rocket_contrib;
-extern crate serde;
 
 #[macro_use]
-extern crate serde_derive;
+extern crate diesel;
+extern crate dotenv;
+#[macro_use]
+extern crate rocket;
+#[macro_use]
+extern crate rocket_contrib;
 
-use rocket::{get, post, request::Form, routes, FromForm};
+use std::vec;
+
+use country_emoji::flag;
+use diesel::prelude::*;
+use rocket::response::Redirect;
 use rocket_contrib::templates::Template;
+use serde::{Deserialize, Serialize};
 
-#[derive(Serialize)]
-struct IndexConext {
-    header: String,
+pub mod models;
+pub mod schema;
+
+use self::schema::*;
+
+#[database("database")]
+struct DbConn(rocket_contrib::databases::diesel::MysqlConnection);
+
+#[derive(Serialize, Deserialize)]
+struct TeraUser {
+    user: models::User,
 }
 
-#[derive(FromForm)]
-struct User {
-    username: String,
-    password: String,
+#[get("/user/<username>")]
+fn get_user_info(conn: DbConn, username: String) -> Template {
+    let user: Result<models::User, _> = users::table
+        .filter(users::username.eq(&username))
+        .get_result(&*conn);
+
+    match user {
+        Ok(user) => {
+        
+            let mut context = TeraUser {
+                user: user,
+            };
+           
+
+            Template::render("user", context)
+        }
+        _ => {
+            let context: std::collections::HashMap<String, String> =
+                std::collections::HashMap::new();
+            Template::render("user_not_found", context)
+        }
+    }
 }
 
-#[get("/")]
-fn index() -> Template {
-    let context = IndexConext {
-        header: "Hello!".to_string(),
-    };
-    Template::render("index", &context)
+#[derive(Serialize, Deserialize)]
+struct TeraUsers {
+    users: Vec<models::User>,
 }
 
-#[post("/", data = "<userdata>")]
-fn login(userdata: Form<User>) -> String {
-    let res = format!("Hello, {}", userdata.username);
-    let pass = userdata.password.clone();
-    dbg!(pass);
-    res
+#[get("/users")]
+fn get_users(conn: DbConn) -> Template {
+    let results: Result<Vec<models::User>, _> = users::table.get_results(&*conn);
+      
+
+    let mut context = TeraUsers { users: vec![] };
+    for mut u in results.unwrap() {
+        context.users.push(u);
+    }
+
+    Template::render("users", context)
+}
+
+
+#[post("/newuser", data = "<NewUser_form>")]
+fn create_user(conn: DbConn, user:Form<NewUser>) -> Redirect {
+    
+    let _ = diesel::insert_into(users::table)
+        .values(user)
+        .execute(&*conn);
+
+    Redirect::to("/users")
+}
+
+#[get("/newuser")]
+fn new_user_page() -> Template {
+    let context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    Template::render("new_user", context)
 }
 
 fn main() {
-    initiate_logging();
-
-    let my_routes = routes![index, login];
-    dbg!(my_routes.clone());
     rocket::ignite()
-        .mount("/", my_routes)
+        .attach(DbConn::fairing())
         .attach(Template::fairing())
+        .mount(
+            "/",
+            routes![
+                index,
+                get_user_info,
+                get_users,
+                create_user,
+                new_user_page
+            ],
+        )
         .launch();
-}
-
-fn initiate_logging() {
-    // dotenv().ok();
-
-    let env = dotenv::from_filename(".env").expect("'.env' not found.");
-    dbg!(env);
-
-    if std::env::var("PWD").is_err() {
-        std::env::set_var("PWD", env!("CARGO_MANIFEST_DIR"));
-        let pwd = std::env::var("PWD").unwrap();
-        dbg!(pwd);
-    }
-
-    // std::env::set_var("RUST_LOG", "debug, actix_web=debug");
-    // env_logger::init();
 }
