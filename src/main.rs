@@ -12,7 +12,7 @@ use std::vec;
 
 use country_emoji::flag;
 use diesel::prelude::*;
-use rocket::{response::Redirect, request::Form};
+use rocket::{request::Form, response::Redirect};
 use rocket_contrib::templates::Template;
 use schema::users::password;
 use serde::{Deserialize, Serialize};
@@ -38,11 +38,7 @@ fn get_user_info(conn: DbConn, username: String) -> Template {
 
     match user {
         Ok(user) => {
-        
-            let mut context = TeraUser {
-                user: user,
-            };
-           
+            let mut context = TeraUser { user: user };
 
             Template::render("user", context)
         }
@@ -62,7 +58,6 @@ struct TeraUsers {
 #[get("/users")]
 fn get_users(conn: DbConn) -> Template {
     let results: Result<Vec<models::User>, _> = users::table.get_results(&*conn);
-      
 
     let mut context = TeraUsers { users: vec![] };
     for mut u in results.unwrap() {
@@ -72,23 +67,20 @@ fn get_users(conn: DbConn) -> Template {
     Template::render("users", context)
 }
 
-
 #[post("/newuser", data = "<user>")]
-fn create_user(conn: DbConn, user:Form<models::NewUser>) -> Template {
-    let u=user.0.clone();
-    println!("before{:#?}",user.0);
-    
+fn create_user(conn: DbConn, user: Form<models::NewUser>) -> Template {
+    let u = user.0.clone();
+    println!("before{:#?}", user.0);
+
     let _ = diesel::insert_into(users::table)
         .values(user.0)
         .execute(&*conn);
-        println!("after{:#?}",u);
-   // Redirect::to("/users")
-       let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
-context.insert("username".to_string(), u.username);
+    println!("after{:#?}", u);
+    // Redirect::to("/users")
+    let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    context.insert("username".to_string(), u.username);
     Template::render("user", context)
 }
-
-
 
 #[get("/newuser")]
 fn new_user_page() -> Template {
@@ -98,32 +90,75 @@ fn new_user_page() -> Template {
 #[derive(Serialize)]
 struct IndexConext {
     header: String,
+    login_failed: bool,
 }
-
-
 
 #[get("/")]
 fn index() -> Template {
     let context = IndexConext {
         header: "Hello!".to_string(),
+        login_failed: false,
     };
     Template::render("index", &context)
 }
 
+// #[post("/", data = "<user>")]
+// fn login(conn:DbConn,user: Form<models::NewUser>) -> String {
+//     let res = format!("Hello, {}", user.username);
+//     let pass = user.password.clone();
+//     let u=user.0.clone();
+//     println!("before{:#?}",user.0);
+
+//     let _ = diesel::insert_into(users::table)
+//         .values(user.0)
+//         .execute(&*conn);
+//         println!("after{:#?}",u);
+
+//     dbg!(pass);
+//     res
+// }
+
 #[post("/", data = "<user>")]
-fn login(conn:DbConn,user: Form<models::NewUser>) -> String {
+fn login(conn: DbConn, user: Form<models::NewUser>) -> Template {
     let res = format!("Hello, {}", user.username);
+
+    let db_user: Result<models::User, _> = users::table
+        .filter(users::username.eq(&user.username))
+        .get_result(&*conn);
+
     let pass = user.password.clone();
-    let u=user.0.clone();
-    println!("before{:#?}",user.0);
-    
-    let _ = diesel::insert_into(users::table)
-        .values(user.0)
-        .execute(&*conn);
-        println!("after{:#?}",u);
- 
-    dbg!(pass);
-    res
+    match db_user {
+        Ok(u) => {
+            if (!u.password.eq(&pass)) {
+                let context = IndexConext {
+                    header: "Hello!".to_string(),
+                    login_failed: true,
+                };
+                return Template::render("index", &context);
+            }
+        }
+        Err(e) => {
+            let context = IndexConext {
+                header: "Hello!".to_string(),
+                login_failed: true,
+            };
+            return Template::render("index", &context);
+        }
+    }
+
+    let u = user.0.clone();
+    println!("before{:#?}", user.0);
+
+    let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    context.insert("username".to_string(), u.username);
+    return Template::render("admin", context);
+}
+
+#[get("/admin")]
+fn admin() -> Template {
+    let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    context.insert("username".to_string(), "Admin".to_string());
+    Template::render("admin", context)
 }
 
 fn main() {
@@ -132,19 +167,8 @@ fn main() {
         .attach(Template::fairing())
         .mount(
             "/",
-            routes![
-                index,
-                login,
-                get_user_info,
-                get_users,
-                new_user_page
-            ],
-        ).mount(
-            "/newuser",
-            routes![
-                 create_user,
-                
-            ],
+            routes![index, login, get_user_info, get_users, new_user_page, admin,],
         )
+        .mount("/newuser", routes![create_user,])
         .launch();
 }

@@ -1,6 +1,5 @@
-# rust_fullstack_example
+# Reaaad me
 
-An example using Rocket, Diesel, Tera and MySQL to create a simple chat app.
 
 ## Instructions
 1. Clone the repo

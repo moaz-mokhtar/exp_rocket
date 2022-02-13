@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset='utf-8'>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Faculty of Computer Technology and Sciences</title>
+</head>
+
+<body>
+    {# header #}
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <div class="col-md-2">
+                    <img class="img-fluid" src="res/logo1.jpg" alt="Logo">
+                </div>
+                <div class="col-md-8 text-center">
+                    FACULTY OF COMPUTER TECHNOLOGY & SCIENCES
+                </div>
+                <div class="col-md-2">
+                    <img class="img-fluid" src="res/logo2.jpg" alt="Logo">
+                </div>
+            </div>
+        </header>
+        
+        <div class="nav-scroller py-1 mb-2">
+            <nav class="nav d-flex justify-content-between">
+                <a class="p-2 text-muted" href="/">Home</a>
+                <a class="p-2 text-muted" href="#">About Us</a>
+                <a class="p-2 text-muted" href="#">Faculty</a>
+                <a class="p-2 text-muted" href="#">Courses</a>
+                <a class="p-2 text-muted" href="#">Gallery</a>
+                <a class="p-2 text-muted" href="#">Facilities</a>
+            </nav>
+        </div>
+    </div>
+
+    {# main #}
+    <div class="container">
+        <div class="row mb-2">
+            {# {{!-- Admin sidebar --}} #}
+            <div class="col-md-3">
+
+                <div class="d-flex flex-column flex-shrink-0 p-3 bg-light">
+                    <span class="fs-4">
+                        Admin actions
+                    </span>
+
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li>
+                            <a href="new_user" class="nav-link link-dark">
+                                Create new user
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link link-dark">
+                                Update News
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link link-dark">
+                                Update Faculity
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link link-dark">
+                                Update Courses
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {# {{!-- Content part --}} #}
+            <div class="col-md-8">
+                
+                <div class="row border-bottom pt-3  mb-3 ">
+                    <h1 class="h2">Welcome to {{username}} page</h1>
+                    <p>Login date: xxx</p>
+
+                </div>
+
+                <div class=" mb-3 rounded">
+                    <div class="container border rounded text-center">
+
+                        <h3 class="">Our team</h3>
+                        <table class="table ">
+                            <thead>
+                                <tr>
+                                    <th scope="col">IC No</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">DOI</th>
+                                    <th scope="col">Mob No</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Course</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD-2021-0322</td>
+                                    <td>Student 1 name </td>
+                                    <td>DOI 1 </td>
+                                    <td>+911234567899</td>
+                                    <td>stduent@univ.edu </td>
+                                    <td>Programming 101</td>
+                    
+                                </tr>
+                    
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="container ">
+                    <div class=" mb-3 rounded">
+                        <div class="container-flux">
+                            <div class="container rounded border-bottom">
+                                <h5>Update event</h5>
+                        
+                                <div class="mb-3 row">
+                                    <label for="#" class="col-sm-3 col-form-label">Event name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" value="">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="#" class="col-sm-3 form-label">Description</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="#" class="col-sm-4 form-label">Upload photo</label>
+                                    <div class="col-sm-8">
+                                        <a class="btn btn-secondary" href="#" role="button">Upload photo</a>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <div class="col-sm-10"></div>
+                                    <div class="col-sm-2">
+                                        <a class="btn btn-secondary" href="#" role="button">Add</a>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            <div class="container rounded ">
+                                <h5>Events list</h5>
+                                <table class="table ">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Heading</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Options</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Event 1</td>
+                                            <td>2021-05-15</td>
+                                            <td>
+                                                <a class="btn btn-secondary btn-sm" href="#" role="button">Edit</a>
+                                                <a class="btn btn-danger btn-sm" href="#" role="button">Delete</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Event 2</td>
+                                            <td>2021-05-17</td>
+                                            <td>
+                                                <a class="btn btn-secondary btn-sm" href="#" role="button">Edit</a>
+                                                <a class="btn btn-danger btn-sm" href="#" role="button">Delete</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Event 3</td>
+                                            <td>2021-05-28</td>
+                                            <td>
+                                                <a class="btn btn-secondary btn-sm" href="#" role="button">Edit</a>
+                                                <a class="btn btn-danger btn-sm" href="#" role="button">Delete</a>
+                                            </td>
+                                        </tr>
+                        
+                                    </tbody>
+                                </table>
+                        
+                            </div>
+                        
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# footer #}
+    <div class="container">
+        <footer class="row row-cols-5 py-5 my-5 border-top">
+            <div class="col">
+                <h5>
+                    Important links
+                </h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Army Portal
+                        </a>
+                    </li>
+            
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Artract
+                        </a>
+                    </li>
+            
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Army cypergroup
+                        </a>
+                    </li>
+            
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            NCTE
+                        </a>
+                    </li>
+            
+                </ul>
+            </div>
+            
+            <div class="col">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Important Advisories
+                        </a>
+            
+                        <a href="#" class="nav-link">
+                            Notification regarding banned apps
+                        </a>
+            
+                        <a href="#" class="nav-link">
+                            ACSP-2019
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col">
+                <ul class="nav flex-column">
+                    Website developed in Rust by:
+                    <li>
+                        Name 1
+                    </li>
+                    <li>
+                        Name 2
+                    </li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+ 
+</body>
+
+
+
+
+
+
+</html>
+
