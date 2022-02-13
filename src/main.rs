@@ -12,8 +12,9 @@ use std::vec;
 
 use country_emoji::flag;
 use diesel::prelude::*;
-use rocket::response::Redirect;
+use rocket::{response::Redirect, request::Form};
 use rocket_contrib::templates::Template;
+use schema::users::password;
 use serde::{Deserialize, Serialize};
 
 pub mod models;
@@ -72,20 +73,57 @@ fn get_users(conn: DbConn) -> Template {
 }
 
 
-#[post("/newuser", data = "<NewUser_form>")]
-fn create_user(conn: DbConn, user:Form<NewUser>) -> Redirect {
+#[post("/newuser", data = "<user>")]
+fn create_user(conn: DbConn, user:Form<models::NewUser>) -> Template {
+    let u=user.0.clone();
+    println!("before{:#?}",user.0);
     
     let _ = diesel::insert_into(users::table)
-        .values(user)
+        .values(user.0)
         .execute(&*conn);
-
-    Redirect::to("/users")
+        println!("after{:#?}",u);
+   // Redirect::to("/users")
+       let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+context.insert("username".to_string(), u.username);
+    Template::render("user", context)
 }
+
+
 
 #[get("/newuser")]
 fn new_user_page() -> Template {
     let context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
     Template::render("new_user", context)
+}
+#[derive(Serialize)]
+struct IndexConext {
+    header: String,
+}
+
+
+
+#[get("/")]
+fn index() -> Template {
+    let context = IndexConext {
+        header: "Hello!".to_string(),
+    };
+    Template::render("index", &context)
+}
+
+#[post("/", data = "<user>")]
+fn login(conn:DbConn,user: Form<models::NewUser>) -> String {
+    let res = format!("Hello, {}", user.username);
+    let pass = user.password.clone();
+    let u=user.0.clone();
+    println!("before{:#?}",user.0);
+    
+    let _ = diesel::insert_into(users::table)
+        .values(user.0)
+        .execute(&*conn);
+        println!("after{:#?}",u);
+ 
+    dbg!(pass);
+    res
 }
 
 fn main() {
@@ -96,10 +134,16 @@ fn main() {
             "/",
             routes![
                 index,
+                login,
                 get_user_info,
                 get_users,
-                create_user,
                 new_user_page
+            ],
+        ).mount(
+            "/newuser",
+            routes![
+                 create_user,
+                
             ],
         )
         .launch();
