@@ -1,4 +1,4 @@
-# Reaaad me
+# Read me
 
 
 ## Instructions

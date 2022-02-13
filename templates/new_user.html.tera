@@ -1,8 +1,6 @@
-
-
-
+{% extends "index" %}
 {% block new_user %}
-                 
+
 
 <h1>{{header}}</h1>
 <form method="POST">

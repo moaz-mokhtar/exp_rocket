@@ -83,15 +83,24 @@ fn create_user(conn: DbConn, user: Form<models::NewUser>) -> Template {
 }
 
 #[get("/newuser")]
-fn new_user_page() -> Template {
-    let context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+fn new_user() -> Template {
+    let mut context: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    context.insert("header".to_string() ,"Create new User".to_string());
     Template::render("new_user", context)
 }
+
 #[derive(Serialize)]
 struct IndexConext {
     header: String,
     login_failed: bool,
 }
+
+// #[derive(Serialize)]
+// struct Context{
+//     header: String,
+//     logged_username: Option<String>
+//     login_failed: bool,
+// }
 
 #[get("/")]
 fn index() -> Template {
@@ -167,7 +176,7 @@ fn main() {
         .attach(Template::fairing())
         .mount(
             "/",
-            routes![index, login, get_user_info, get_users, new_user_page, admin,],
+            routes![index, login, get_user_info, get_users, new_user, admin,],
         )
         .mount("/newuser", routes![create_user,])
         .launch();
